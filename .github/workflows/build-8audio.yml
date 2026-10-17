@@ -41,15 +41,25 @@ jobs:
           cd upstream
           python3 - <<'PY'
           from pathlib import Path
+          import re
+
           p = Path("app/build.gradle.kts")
           s = p.read_text()
-          old = 'applicationId = "moe.koiverse.archivetune"'
-          new = 'applicationId = "com.akiraa14200.eightaudio"'
-          if old in s:
-              s = s.replace(old, new)
-              p.write_text(s)
-          elif new not in s:
-              raise SystemExit("Could not find the expected applicationId in app/build.gradle.kts")
+          s, count = re.subn(
+              r'(?m)^(\s*applicationId\s*=\s*)"[^"]+"',
+              r'\1"com.akiraa14200.eightaudio"',
+              s,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit("Could not locate applicationId in app/build.gradle.kts")
+          s = re.sub(
+              r'(?m)^(\s*namespace\s*=\s*)"[^"]+"',
+              r'\1"com.akiraa14200.eightaudio"',
+              s,
+              count=1,
+          )
+          p.write_text(s)
 
           manifest = Path("app/src/main/AndroidManifest.xml")
           if manifest.exists():
