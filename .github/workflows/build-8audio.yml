@@ -86,12 +86,12 @@ jobs:
 
       - name: Build arm64 debug APK
         working-directory: upstream
-        run: ./gradlew --no-daemon :app:assembleMobileArm64Debug
+        run: ./gradlew --no-daemon :app:assembleFossMobileArm64Debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: 8-audio-arm64-debug
-          path: upstream/app/build/outputs/apk/mobile/arm64/debug/*.apk
+          path: upstream/app/build/outputs/apk/foss/mobile/arm64/debug/*.apk
           if-no-files-found: error
           retention-days: 14
