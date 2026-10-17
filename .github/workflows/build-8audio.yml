@@ -17,12 +17,13 @@ jobs:
       - name: Checkout 8 Audio build configuration
         uses: actions/checkout@v4
 
-      - name: Checkout ArchiveTune source
+      - name: Checkout ArchiveTune source and required submodules
         uses: actions/checkout@v4
         with:
           repository: rukamori/ArchiveTune
           ref: main
           path: upstream
+          submodules: recursive
           persist-credentials: false
 
       - name: Set up JDK 21
@@ -42,19 +43,36 @@ jobs:
           from pathlib import Path
           p = Path("app/build.gradle.kts")
           s = p.read_text()
-          s = s.replace('applicationId = "moe.koiverse.archivetune"', 'applicationId = "com.akiraa14200.eightaudio"')
-          p.write_text(s)
+          old = 'applicationId = "moe.koiverse.archivetune"'
+          new = 'applicationId = "com.akiraa14200.eightaudio"'
+          if old in s:
+              s = s.replace(old, new)
+              p.write_text(s)
+          elif new not in s:
+              raise SystemExit("Could not find the expected applicationId in app/build.gradle.kts")
+
           manifest = Path("app/src/main/AndroidManifest.xml")
           if manifest.exists():
               s = manifest.read_text()
               s = s.replace('android:label="@string/app_name"', 'android:label="8 Audio"')
               manifest.write_text(s)
-          for p in Path("app/src").rglob("strings.xml"):
-              s = p.read_text(errors="ignore")
+
+          for strings_file in Path("app/src").rglob("strings.xml"):
+              s = strings_file.read_text(errors="ignore")
               s = s.replace(">ArchiveTune<", ">8 Audio<").replace(">Archive Tune<", ">8 Audio<")
-              p.write_text(s)
+              strings_file.write_text(s)
           PY
           chmod +x gradlew
+
+      - name: Verify required Gradle project directories
+        working-directory: upstream
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d core
+          test -d lyrics/betterlyrics
+          test -f gradlew
+          echo "Required source modules are present."
 
       - name: Build arm64 debug APK
         working-directory: upstream
