@@ -83,10 +83,26 @@ jobs:
         working-directory: upstream
         run: ./gradlew --no-daemon :app:assembleFossMobileArm64Debug
 
+      - name: Locate built APK
+        id: apk
+        working-directory: upstream
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "APK files produced by Gradle:"
+          find app/build/outputs/apk -type f -name '*.apk' -print
+          APK="$(find app/build/outputs/apk -type f -name '*.apk' | grep -E 'arm64.*debug|debug.*arm64|arm64' | head -n 1 || true)"
+          if [ -z "$APK" ]; then
+            echo "::error::Gradle succeeded but no arm64 APK was found."
+            exit 1
+          fi
+          echo "path=$APK" >> "$GITHUB_OUTPUT"
+          echo "Selected APK: $APK"
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: 8-audio-arm64-debug
-          path: upstream/app/build/outputs/apk/foss/mobile/arm64/debug/*.apk
+          path: upstream/${{ steps.apk.outputs.path }}
           if-no-files-found: error
           retention-days: 14
