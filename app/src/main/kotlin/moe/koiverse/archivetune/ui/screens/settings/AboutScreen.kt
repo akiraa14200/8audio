@@ -274,8 +274,8 @@ fun AboutScreen(
             runCatching {
                 fetchRepoContributorsNetwork(
                     client = httpClient,
-                    owner = "koiverse",
-                    repo = "ArchiveTune",
+                    owner = "akiraa14200",
+                    repo = "8audio",
                     cachedEtag = cachedEtag,
                 )
             }.getOrNull()
@@ -397,7 +397,7 @@ fun AboutScreen(
                 verticalAlignment = Alignment.Top,
             ) {
                 Text(
-                    text = "ArchiveTune",
+                    text = "8 Audio",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
@@ -465,7 +465,7 @@ fun AboutScreen(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "Koiverse",
+                text = "Your music. Your space.",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -474,7 +474,7 @@ fun AboutScreen(
 
             Row {
                 IconButton(
-                    onClick = { uriHandler.openUri("https://github.com/koiverse/archivetune") },
+                    onClick = { uriHandler.openUri("https://github.com/akiraa14200/8audio") },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.github),
@@ -485,7 +485,7 @@ fun AboutScreen(
                 Spacer(Modifier.width(8.dp))
 
                 IconButton(
-                    onClick = { uriHandler.openUri("https://archivetune.koiiverse.cloud") },
+                    onClick = { uriHandler.openUri("https://github.com/akiraa14200/8audio/releases") },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.website),
@@ -495,66 +495,10 @@ fun AboutScreen(
 
                 Spacer(Modifier.width(8.dp))
 
-                IconButton(
-                    onClick = { uriHandler.openUri("https://t.me/ArchiveTuneGC") },
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.telegram),
-                        contentDescription = null
-                    )
-                }
 
-                Spacer(Modifier.width(8.dp))
-
-                IconButton(
-                    onClick = { uriHandler.openUri("https://sociabuzz.com/chrtrxwstia") },
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.coffee),
-                        contentDescription = null
-                    )
-                }
             }
 
             Spacer(Modifier.height(16.dp))
-
-            SectionHeader(
-                title = "Lead Developer",
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            LeadDeveloperCard(
-                member = leadDeveloper,
-                onOpenUri = uriHandler::openUri,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            SectionHeader(
-                title = "Collaborators",
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                collaborators.forEach { member ->
-                    CollaboratorCard(
-                        member = member,
-                        onOpenUri = uriHandler::openUri,
-                    )
-                }
-            }
 
             Spacer(Modifier.height(24.dp))
 
