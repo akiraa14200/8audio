@@ -10,14 +10,21 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: build-8-audio-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout 8 Audio build configuration
         uses: actions/checkout@v4
+        with:
+          path: config
 
-      - name: Checkout ArchiveTune source and required submodules
+      - name: Checkout ArchiveTune source and submodules
         uses: actions/checkout@v4
         with:
           repository: rukamori/ArchiveTune
@@ -26,8 +33,20 @@ jobs:
           submodules: recursive
           persist-credentials: false
 
+      - name: Verify source and Gradle wrapper
+        working-directory: upstream
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f ./gradlew || { echo "::error::gradlew is missing from upstream root"; find . -maxdepth 4 -name gradlew -print; exit 1; }
+          test -f settings.gradle.kts || test -f settings.gradle
+          chmod +x ./gradlew
+          echo "Gradle wrapper: $(pwd)/gradlew"
+          echo "Git submodules:"
+          git submodule status || true
+
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
@@ -35,55 +54,53 @@ jobs:
           cache-dependency-path: upstream/gradle/libs.versions.toml
 
       - name: Brand application as 8 Audio
+        working-directory: upstream
         shell: bash
         run: |
           set -euo pipefail
-          cd upstream
           python3 - <<'PY'
           from pathlib import Path
           import re
 
-          p = Path("app/build.gradle.kts")
-          s = p.read_text()
-          s, count = re.subn(
+          gradle_file = Path("app/build.gradle.kts")
+          if not gradle_file.is_file():
+              raise SystemExit("Missing app/build.gradle.kts")
+          source = gradle_file.read_text()
+          source, count = re.subn(
               r'(?m)^(\s*applicationId\s*=\s*)"[^"]+"',
               r'\1"com.akiraa14200.eightaudio"',
-              s,
+              source,
               count=1,
           )
           if count != 1:
               raise SystemExit("Could not locate applicationId in app/build.gradle.kts")
-          # Keep upstream namespace unchanged so Kotlin R/BuildConfig references remain valid.
-          p.write_text(s)
+          gradle_file.write_text(source)
 
           manifest = Path("app/src/main/AndroidManifest.xml")
-          if manifest.exists():
-              s = manifest.read_text()
-              s = s.replace('android:label="@string/app_name"', 'android:label="8 Audio"')
-              manifest.write_text(s)
+          if manifest.is_file():
+              source = manifest.read_text()
+              source = source.replace('android:label="@string/app_name"', 'android:label="8 Audio"')
+              manifest.write_text(source)
 
           for strings_file in Path("app/src").rglob("strings.xml"):
-              s = strings_file.read_text(errors="ignore")
-              s = s.replace(">ArchiveTune<", ">8 Audio<").replace(">Archive Tune<", ">8 Audio<")
-              strings_file.write_text(s)
+              source = strings_file.read_text(errors="ignore")
+              source = source.replace(">ArchiveTune<", ">8 Audio<").replace(">Archive Tune<", ">8 Audio<")
+              strings_file.write_text(source)
           PY
-          chmod +x gradlew
-
-      - name: Verify required Gradle project directories
-        working-directory: upstream
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -d core
-          test -d lyrics/betterlyrics
-          test -f gradlew
-          echo "Required source modules are present."
+          grep -n 'applicationId' app/build.gradle.kts
+          test -f ./gradlew
 
       - name: Build arm64 debug APK
         working-directory: upstream
-        run: ./gradlew --no-daemon :app:assembleFossMobileArm64Debug
+        shell: bash
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: |
+          set -euo pipefail
+          ./gradlew --no-daemon --stacktrace :app:assembleFossMobileArm64Debug
 
-      - name: Locate built APK
+      - name: Locate and verify APK
         id: apk
         working-directory: upstream
         shell: bash
@@ -93,11 +110,13 @@ jobs:
           find app/build/outputs/apk -type f -name '*.apk' -print
           APK="$(find app/build/outputs/apk -type f -name '*.apk' | grep -E 'arm64.*debug|debug.*arm64|arm64' | head -n 1 || true)"
           if [ -z "$APK" ]; then
-            echo "::error::Gradle succeeded but no arm64 APK was found."
+            echo "::error::Build finished without producing an arm64 APK."
             exit 1
           fi
+          test -s "$APK"
           echo "path=$APK" >> "$GITHUB_OUTPUT"
           echo "Selected APK: $APK"
+          ls -lh "$APK"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
