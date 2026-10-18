@@ -35,8 +35,9 @@ jobs:
           rsync -a --delete \
             --exclude='.git/' \
             --exclude='archivetune-source/' \
-            --exclude='.github/workflows/restore-archivetune.yml' \
+            --exclude='.github/workflows/' \
             archivetune-source/ ./
+          rm -f .gitmodules
           python3 - <<'PY'
           from pathlib import Path
           import re
