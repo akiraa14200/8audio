@@ -181,6 +181,7 @@ import moe.koiverse.archivetune.constants.LaunchCountKey
 import moe.koiverse.archivetune.constants.MiniPlayerBottomSpacing
 import moe.koiverse.archivetune.constants.MiniPlayerHeight
 import moe.koiverse.archivetune.constants.MiniPlayerLastAnchorKey
+import moe.koiverse.archivetune.constants.OnboardingCompletedKey
 import moe.koiverse.archivetune.constants.NavigationBarAnimationSpec
 import moe.koiverse.archivetune.constants.PauseSearchHistoryKey
 import moe.koiverse.archivetune.constants.PureBlackKey
@@ -235,6 +236,7 @@ import moe.koiverse.archivetune.ui.component.shimmer.ShimmerTheme
 import moe.koiverse.archivetune.ui.menu.YouTubeSongMenu
 import moe.koiverse.archivetune.ui.player.BottomSheetPlayer
 import moe.koiverse.archivetune.ui.screens.LOGIN_URL_ARGUMENT
+import moe.koiverse.archivetune.ui.screens.OnboardingScreen
 import moe.koiverse.archivetune.ui.screens.Screens
 import moe.koiverse.archivetune.ui.screens.buildLoginRoute
 import moe.koiverse.archivetune.ui.screens.navigationBuilder
@@ -454,15 +456,6 @@ class MainActivity : ComponentActivity() {
                 }
 
             LaunchedEffect(Unit) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                    ContextCompat.checkSelfPermission(
-                        this@MainActivity,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-
                 if (System.currentTimeMillis() - Updater.lastCheckTime > 1.days.inWholeMilliseconds) {
                     Updater.getLatestVersionName().onSuccess {
                         latestVersionName = it
@@ -689,6 +682,21 @@ class MainActivity : ComponentActivity() {
                         defaultValue = COLLAPSED_ANCHOR
                     )
                     val defaultOpenTab by rememberEnumPreference(DefaultOpenTabKey, NavigationTab.HOME)
+                    val (hasCompletedOnboarding, onOnboardingCompletedChange) =
+                        rememberPreference(OnboardingCompletedKey, defaultValue = false)
+
+                    LaunchedEffect(hasCompletedOnboarding) {
+                        if (
+                            hasCompletedOnboarding &&
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                            ContextCompat.checkSelfPermission(
+                                this@MainActivity,
+                                Manifest.permission.POST_NOTIFICATIONS,
+                            ) != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                    }
                     val pauseSearchHistory by rememberPreference(PauseSearchHistoryKey, defaultValue = false)
                     val tabOpenedFromShortcut =
                         remember {
@@ -1796,6 +1804,21 @@ class MainActivity : ComponentActivity() {
                                     )
                                     .zIndex(10f),
                         )
+
+                        if (!hasCompletedOnboarding && !isTvDevice && tabOpenedFromShortcut == null && !launchMusicRecognitionFromShortcut) {
+                            Dialog(
+                                onDismissRequest = {},
+                                properties = DialogProperties(
+                                    usePlatformDefaultWidth = false,
+                                    dismissOnBackPress = false,
+                                    dismissOnClickOutside = false,
+                                ),
+                            ) {
+                                OnboardingScreen(
+                                    onFinish = { onOnboardingCompletedChange(true) },
+                                )
+                            }
+                        }
                     }
 
                     LaunchedEffect(shouldShowSearchBar, openSearchImmediately) {
