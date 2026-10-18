@@ -371,7 +371,7 @@ private fun FloatingNavigationToolbarItem(
 
 @Composable
 private fun floatingToolbarContainerColor(pureBlack: Boolean): Color {
-    return if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer
+    return if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.76f)
 }
 
 @Composable
