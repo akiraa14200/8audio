@@ -23,8 +23,8 @@ android {
     applicationId = "com.akiraa14200.eightaudio"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 134
+        versionName = "13.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
