@@ -34,6 +34,7 @@ jobs:
           mkdir -p .github/workflows
           rsync -a --delete \
             --exclude='.git/' \
+            --exclude='archivetune-source/' \
             --exclude='.github/workflows/restore-archivetune.yml' \
             archivetune-source/ ./
           python3 - <<'PY'
