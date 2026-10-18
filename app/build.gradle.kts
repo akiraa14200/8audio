@@ -23,8 +23,8 @@ android {
     applicationId = "com.akiraa14200.eightaudio"
         minSdk = 26
         targetSdk = 37
-        versionCode = 133
-        versionName = "13.2.0"
+        versionCode = 1
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -51,6 +51,10 @@ android {
                 ?: System.getenv("CANVAS_BEARER_TOKEN")
                 ?: ""
         buildConfigField("String", "CANVAS_BEARER_TOKEN", "\"$canvasBearerToken\"")
+        buildConfigField("String", "GITHUB_OWNER", "\"akiraa14200\"")
+        buildConfigField("String", "GITHUB_REPO", "\"8audio\"")
+        buildConfigField("String", "RELEASE_GITHUB_OWNER", "\"akiraa14200\"")
+        buildConfigField("String", "RELEASE_GITHUB_REPO", "\"8audio\"")
     }
 
     flavorDimensions += listOf("device", "abi")
