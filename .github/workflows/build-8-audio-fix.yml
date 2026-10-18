@@ -43,7 +43,7 @@ jobs:
 
       - name: Build arm64 debug APK
         working-directory: ArchiveTune
-        run: ./gradlew --no-daemon assembleArm64Debug
+        run: ./gradlew --no-daemon assembleGmsMobileArm64Debug
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
