@@ -53,12 +53,7 @@ jobs:
           )
           if count != 1:
               raise SystemExit("Could not locate applicationId in app/build.gradle.kts")
-          s = re.sub(
-              r'(?m)^(\s*namespace\s*=\s*)"[^"]+"',
-              r'\1"com.akiraa14200.eightaudio"',
-              s,
-              count=1,
-          )
+          # Keep upstream namespace unchanged so Kotlin R/BuildConfig references remain valid.
           p.write_text(s)
 
           manifest = Path("app/src/main/AndroidManifest.xml")
