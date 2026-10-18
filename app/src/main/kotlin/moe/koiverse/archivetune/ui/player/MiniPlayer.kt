@@ -11,6 +11,7 @@
 package moe.koiverse.archivetune.ui.player
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -75,7 +76,12 @@ private fun NewMiniPlayer(
                 .offset { IntOffset(offsetX.roundToInt(), 0) }
                 .clip(RoundedCornerShape(32.dp))
                 .background(
-                    color = MaterialTheme.colorScheme.surfaceContainer
+                    color = if (pureBlack) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.78f)
+                )
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (pureBlack) 0.05f else 0.10f),
+                    shape = RoundedCornerShape(32.dp),
                 )
         ) {
             NewMiniPlayerContent(
