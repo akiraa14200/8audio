@@ -24,7 +24,7 @@ jobs:
         with:
           repository: koiverse/ArchiveTune
           ref: v13.2.0
-          path: /tmp/archivetune-source
+          path: archivetune-source
           fetch-depth: 1
 
       - name: Restore complete original project and apply 8 Audio branding
@@ -35,7 +35,7 @@ jobs:
           rsync -a --delete \
             --exclude='.git/' \
             --exclude='.github/workflows/restore-archivetune.yml' \
-            /tmp/archivetune-source/ ./
+            archivetune-source/ ./
           python3 - <<'PY'
           from pathlib import Path
           import re
@@ -51,7 +51,7 @@ jobs:
 
           for path in (root / "app/src/main/res").glob("values*/strings.xml"):
               text = path.read_text(errors="ignore")
-              text = text.replace("ArchiveTune", "8 Audio").replace("archivetune", "eightaudio")
+              text = text.replace("ArchiveTune", "8 Audio")
               path.write_text(text)
 
           app_name = root / "app/src/main/res/values/app_name.xml"
