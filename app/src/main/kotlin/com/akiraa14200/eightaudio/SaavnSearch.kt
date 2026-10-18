@@ -28,4 +28,20 @@ object SaavnSearch {
             }
         } finally { c.disconnect() }
     }
+    fun lyrics(id: String): String {
+        if (id.isBlank() || id.startsWith("local:")) return "Lyrics aren't available for this local file."
+        val q = URLEncoder.encode(id, Charsets.UTF_8.name())
+        val c = URL("https://saavn.dev/api/songs?id=$q").openConnection() as HttpURLConnection
+        c.connectTimeout = 10000
+        c.readTimeout = 10000
+        return try {
+            val root = JSONObject(c.inputStream.bufferedReader().use { it.readText() })
+            val data = root.optJSONObject("data")
+            val song = if (data != null) data else root.optJSONArray("data")?.optJSONObject(0)
+            val text = song?.optString("lyrics").orEmpty().trim()
+            if (text.isNotBlank() && text != "null") text else "Lyrics weren't provided by the current music source for this track."
+        } catch (_: Exception) {
+            "Couldn't load lyrics right now. Please try again later."
+        } finally { c.disconnect() }
+    }
 }
