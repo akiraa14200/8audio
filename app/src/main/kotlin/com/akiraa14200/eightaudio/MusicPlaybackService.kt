@@ -19,7 +19,7 @@ class MusicPlaybackService : MediaSessionService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_PLAY) {
             val url = intent.getStringExtra(URL).orEmpty()
-            if (url.startsWith("https://")) {
+            if (url.startsWith("https://") || url.startsWith("content://")) {
                 val meta = MediaMetadata.Builder().setTitle(intent.getStringExtra(TITLE)).setArtist(intent.getStringExtra(ARTIST))
                     .setArtworkUri(intent.getStringExtra(ART)?.let(Uri::parse)).build()
                 player?.setMediaItem(MediaItem.Builder().setUri(url).setMediaMetadata(meta).build())
