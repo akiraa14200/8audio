@@ -248,7 +248,7 @@ fun UpdateScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "ArchiveTune provides two download channels for builds:",
+                        text = "8 Audio provides stable releases and development builds:",
                         style = MaterialTheme.typography.bodyMedium
                     )
 
@@ -259,11 +259,11 @@ fun UpdateScreen(
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            text = "Distributed via official GitHub Releases.",
+                            text = "Distributed through the 8 Audio GitHub Releases page.",
                             style = MaterialTheme.typography.bodySmall
                         )
                         Text(
-                            text = "These versions are tested and recommended for most users.",
+                            text = "Stable versions are recommended for everyday listening.",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -275,7 +275,7 @@ fun UpdateScreen(
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            text = "Automatically generated development builds hosted via nightly.link.",
+                            text = "Development APKs are published by the 8 Audio GitHub Actions workflow.",
                             style = MaterialTheme.typography.bodySmall
                         )
                         Text(
