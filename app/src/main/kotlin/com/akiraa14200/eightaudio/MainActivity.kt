@@ -175,7 +175,7 @@ private fun AudioApp(
                             .clickable { tab = "Player" }.padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        AsyncImage(t.artwork.ifBlank { null }, null, Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)))
+                        AsyncImage(t.artwork.takeIf { it.isNotBlank() }, null, Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)))
                         Column(Modifier.weight(1f).padding(start = 10.dp)) {
                             Text(t.title, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold)
                             Text(t.artist, color = muted, fontSize = 12.sp)
@@ -287,7 +287,7 @@ private fun AudioApp(
                     }
                     "Player" -> {
                         current?.let { t ->
-                            item { AsyncImage(t.artwork.ifBlank { null }, t.title, Modifier.fillMaxWidth().height(280.dp).clip(RoundedCornerShape(28.dp))) }
+                            item { AsyncImage(t.artwork.takeIf { it.isNotBlank() }, t.title, Modifier.fillMaxWidth().height(280.dp).clip(RoundedCornerShape(28.dp))) }
                             item { Text(t.title, fontSize = 24.sp, fontWeight = FontWeight.Bold); Text(t.artist, color = muted) }
                             item { Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(onClick = { toggleFavorite(t) }) { Icon(if (favorites.contains(t.id)) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder, "Favourite", tint = mint) }
@@ -355,7 +355,7 @@ private fun AudioApp(
 
 @Composable private fun TrackItem(t: Track, favorite: Boolean, onPlay: () -> Unit, onFavorite: () -> Unit, onQueue: () -> Unit, onDownload: () -> Unit) {
     Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(17.dp)).background(card).padding(9.dp), verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(t.artwork.ifBlank { null }, t.title, Modifier.size(58.dp).clip(RoundedCornerShape(12.dp)).clickable { onPlay() })
+        AsyncImage(t.artwork.takeIf { it.isNotBlank() }, t.title, Modifier.size(58.dp).clip(RoundedCornerShape(12.dp)).clickable { onPlay() })
         Column(Modifier.weight(1f).clickable { onPlay() }.padding(horizontal = 11.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(t.title, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(t.artist, color = muted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
