@@ -212,10 +212,10 @@ object Updater {
         cachedEtag: String?,
     ): ReleasesNetworkResult {
         val response: HttpResponse =
-            client.get("https://api.github.com/repos/koiverse/ArchiveTune/releases?per_page=$perPage") {
+            client.get("https://api.github.com/repos/${BuildConfig.GITHUB_OWNER}/${BuildConfig.GITHUB_REPO}/releases?per_page=$perPage") {
                 headers {
                     append("Accept", "application/vnd.github+json")
-                    append("User-Agent", "ArchiveTune")
+                    append("User-Agent", "8 Audio")
                     if (!cachedEtag.isNullOrBlank()) {
                         append("If-None-Match", cachedEtag)
                     }
@@ -267,7 +267,7 @@ object Updater {
     suspend fun getCommitHistory(count: Int = 20, branch: String = "dev"): Result<List<GitCommit>> =
         runCatching {
             val response =
-                client.get("https://api.github.com/repos/koiverse/ArchiveTune/commits?sha=$branch&per_page=$count")
+                client.get("https://api.github.com/repos/${BuildConfig.GITHUB_OWNER}/${BuildConfig.GITHUB_REPO}/commits?sha=$branch&per_page=$count")
                     .bodyAsText()
             val jsonArray = JSONArray(response)
             val commits = mutableListOf<GitCommit>()
@@ -289,10 +289,10 @@ object Updater {
         }
 
     fun getLatestDownloadUrl(): String {
-        val baseUrl = "https://github.com/koiverse/ArchiveTune/releases/latest/download/"
+        val baseUrl = "https://github.com/${BuildConfig.RELEASE_GITHUB_OWNER}/${BuildConfig.RELEASE_GITHUB_REPO}/releases/latest/download/"
         val architecture = BuildConfig.ARCHITECTURE
         return if (architecture == "universal") {
-            baseUrl + "ArchiveTune.apk"
+            baseUrl + "8-audio-arm64-debug.apk"
         } else {
             baseUrl + "app-${architecture}-release.apk"
         }
