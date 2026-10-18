@@ -202,9 +202,7 @@ private fun AudioApp(
             }
         }) { pad ->
             LazyColumn(
-                Modifier.fillMaxSize().background(
-                    if (blurDisabled || pureBlack) background else Brush.verticalGradient(listOf(Color(0xFF12201B), background, background))
-                ).padding(pad),
+                Modifier.fillMaxSize().then(if (blurDisabled || pureBlack) Modifier.background(background) else Modifier.background(Brush.verticalGradient(listOf(Color(0xFF12201B), background, background)))).padding(pad),
                 contentPadding = PaddingValues(18.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
@@ -224,7 +222,7 @@ private fun AudioApp(
                     "Home" -> {
                         item {
                             Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(26.dp))
-                                .background(if (blurDisabled) surface else Brush.linearGradient(listOf(Color(0xFF27483D), Color(0xFF18211E), Color(0xFF25263A))).let { it })
+                                .then(if (blurDisabled) Modifier.background(surface) else Modifier.background(Brush.linearGradient(listOf(Color(0xFF27483D), Color(0xFF18211E), Color(0xFF25263A)))))
                                 .padding(22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                 Text("YOUR SOUND,\nYOUR SPACE", fontSize = 27.sp, lineHeight = 30.sp, fontWeight = FontWeight.ExtraBold)
                                 Text("Discover tracks, save favourites and keep your music close.", color = Color(0xFFD2DDD7))
