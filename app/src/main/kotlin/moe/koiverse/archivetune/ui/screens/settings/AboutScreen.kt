@@ -149,7 +149,7 @@ private suspend fun fetchRepoContributorsNetwork(
         client.get("https://api.github.com/repos/$owner/$repo/contributors?per_page=$perPage") {
             headers {
                 append("Accept", "application/vnd.github+json")
-                append("User-Agent", "ArchiveTune")
+                append("User-Agent", "8 Audio")
                 if (!cachedEtag.isNullOrBlank()) {
                     append("If-None-Match", cachedEtag)
                 }
@@ -312,37 +312,6 @@ fun AboutScreen(
             }
         }
     }
-
-    val leadDeveloper = TeamMember(
-        avatarUrl = "https://avatar-api.koiisannn.cloud/discord/avatar/886971572668219392",
-        name = "Chartreux Westia",
-        position = "Eh?",
-        profileUrl = "https://github.com/koiverse",
-        github = "https://github.com/koiverse",
-        website = "https://koiiverse.cloud",
-        discord = "https://discord.com/users/886971572668219392"
-    )
-
-    val collaborators = listOf(
-        TeamMember(
-            avatarUrl = "https://avatars.githubusercontent.com/u/93458424?v=4",
-            name = "WTTexe",
-            position = "Word Synced Lyrics, Gradients and UI Changes for the better!",
-            profileUrl = "https://github.com/Windowstechtips",
-            github = "https://github.com/Windowstechtips",
-            website = null,
-            discord = "https://discord.com/users/840839409640800258"
-        ),
-        TeamMember(
-            avatarUrl = "https://avatars.githubusercontent.com/u/80542861?v=4",
-            name = "MO AGAMY",
-            position = "Metrolist Dev",
-            profileUrl = "https://github.com/mostafaalagamy",
-            github = "https://github.com/mostafaalagamy",
-            website = null,
-            discord = null
-        ),
-    )
 
     Scaffold(
         topBar = {
